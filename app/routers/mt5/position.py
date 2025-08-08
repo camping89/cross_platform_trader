@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from ..services.mt5_position_service import MT5PositionService
-from ..services.mt5_notification_service import MT5NotificationService
-from ..models.trade import TradeResponse, Position, ModifyPositionRequest
+from ...services.mt5.mt5_position_service import MT5PositionService
+from ...services.mt5.mt5_notification_service import MT5NotificationService
+from ...models.mt5.trade import TradeResponse, Position, ModifyPositionRequest
 
 def get_router(
     position_service: MT5PositionService,
     notification_service: MT5NotificationService
 ) -> APIRouter:
-    router = APIRouter(prefix="/positions", tags=["Position Management"])
+    router = APIRouter(prefix="/positions", tags=["MT5 Position Management"])
 
     @router.get("/",
         response_model=List[Position],

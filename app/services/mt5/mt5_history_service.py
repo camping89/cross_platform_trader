@@ -4,7 +4,7 @@ from datetime import datetime
 import MetaTrader5 as mt5
 import logging
 from .mt5_base_service import MT5BaseService
-from ..models.trade import HistoricalOrder, HistoricalDeal, HistoricalPosition
+from ...models.mt5.trade import HistoricalOrder, HistoricalDeal, HistoricalPosition
 
 logger = logging.getLogger(__name__)
 

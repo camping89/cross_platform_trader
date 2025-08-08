@@ -4,7 +4,7 @@ import MetaTrader5 as mt5
 import logging
 from typing import List, Dict, Optional
 from .mt5_base_service import MT5BaseService
-from ..models.risk_management import (
+from ...models.mt5.risk_management import (
     PositionSizeRequest, PositionSizeResponse,
     TrailingStopRequest, PortfolioRiskRequest, PortfolioRiskResponse
 )

@@ -4,7 +4,7 @@ from datetime import datetime
 import MetaTrader5 as mt5
 import logging
 from .mt5_base_service import MT5BaseService
-from ..models.market import SymbolInfo, TickData, OHLC
+from ...models.mt5.market import SymbolInfo, TickData, OHLC
 
 logger = logging.getLogger(__name__)
 

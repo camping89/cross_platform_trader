@@ -5,21 +5,21 @@ import logging
 import uvicorn
 from contextlib import asynccontextmanager
 from app.config import settings
-from app.models.notification import NotificationConfig
+from app.models.mt5.notification import NotificationConfig
 
-from app.routers import market_info, orders, history, position, risk_management, trading, account, notification, automation, reporting, signal
-from app.services.mt5_base_service import MT5BaseService
-from app.services.mt5_trading_service import MT5TradingService
-from app.services.mt5_market_service import MT5MarketService
-from app.services.mt5_order_service import MT5OrderService
-from app.services.mt5_position_service import MT5PositionService
-from app.services.mt5_history_service import MT5HistoryService
-from app.services.mt5_account_service import MT5AccountService
-from app.services.mt5_risk_service import MT5RiskService
-from app.services.mt5_notification_service import MT5NotificationService
-from app.services.mt5_automation_service import MT5AutomationService
-from app.services.mt5_reporting_service import MT5ReportingService
-from app.services.mt5_signal_service import MT5SignalService
+from app.routers.mt5 import market_info, orders, history, position, risk_management, trading, account, notification, automation, reporting, signal
+from app.services.mt5.mt5_base_service import MT5BaseService
+from app.services.mt5.mt5_trading_service import MT5TradingService
+from app.services.mt5.mt5_market_service import MT5MarketService
+from app.services.mt5.mt5_order_service import MT5OrderService
+from app.services.mt5.mt5_position_service import MT5PositionService
+from app.services.mt5.mt5_history_service import MT5HistoryService
+from app.services.mt5.mt5_account_service import MT5AccountService
+from app.services.mt5.mt5_risk_service import MT5RiskService
+from app.services.mt5.mt5_notification_service import MT5NotificationService
+from app.services.mt5.mt5_automation_service import MT5AutomationService
+from app.services.mt5.mt5_reporting_service import MT5ReportingService
+from app.services.mt5.mt5_signal_service import MT5SignalService
 
 # Initialize services with shared MT5 connection
 mt5_base_service = MT5BaseService()
@@ -86,7 +86,7 @@ async def lifespan(app: FastAPI):
 
 # Initialize FastAPI with lifespan
 app = FastAPI(
-    title="MT5 Trading API",
+    title="Trading API",
     description="API for automated trading through MetaTrader 5",
     version="1.0.0",
     lifespan=lifespan
@@ -103,48 +103,59 @@ app.add_middleware(
 
 @app.get("/health",
          summary="Check status",
-         description="Check MT5 connection status",
+         description="Check connection status",
          tags=["Health Check"])
 async def health_check():
     """Check connection status endpoint"""
     return {
         "status": "healthy" if mt5_base_service.initialized else "unhealthy",
-        "message": "Connected to MT5" if mt5_base_service.initialized else "Not connected to MT5"
+        "message": "Connected" if mt5_base_service.initialized else "Not connected"
     }
 
-# Include routers
+# Include routers with mt5 prefix
 app.include_router(
-    trading.get_router(mt5_trading_service, mt5_notification_service)
+    trading.get_router(mt5_trading_service, mt5_notification_service),
+    prefix="/mt5"
 )
 app.include_router(
-    market_info.get_router(mt5_market_service)
+    market_info.get_router(mt5_market_service),
+    prefix="/mt5"
 )
 app.include_router(
-    orders.get_router(mt5_order_service)
+    orders.get_router(mt5_order_service),
+    prefix="/mt5"
 )
 app.include_router(
-    history.get_router(mt5_history_service)
+    history.get_router(mt5_history_service),
+    prefix="/mt5"
 )
 app.include_router(
-    position.get_router(mt5_position_service, mt5_notification_service)
+    position.get_router(mt5_position_service, mt5_notification_service),
+    prefix="/mt5"
 )
 app.include_router(
-    account.get_router(mt5_account_service)
+    account.get_router(mt5_account_service),
+    prefix="/mt5"
 )
 app.include_router(
-    risk_management.get_router(mt5_risk_service)
+    risk_management.get_router(mt5_risk_service),
+    prefix="/mt5"
 )
 app.include_router(
-    notification.get_router(mt5_notification_service)
+    notification.get_router(mt5_notification_service),
+    prefix="/mt5"
 )
 app.include_router(
-    automation.get_router(mt5_automation_service)
+    automation.get_router(mt5_automation_service),
+    prefix="/mt5"
 )
 app.include_router(
-    reporting.get_router(mt5_reporting_service)
+    reporting.get_router(mt5_reporting_service),
+    prefix="/mt5"
 )
 app.include_router(
-    signal.get_router(mt5_signal_service, mt5_notification_service)
+    signal.get_router(mt5_signal_service, mt5_notification_service),
+    prefix="/mt5"
 )
 
 def main():

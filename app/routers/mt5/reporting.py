@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from datetime import datetime, timedelta
-from ..services.mt5_reporting_service import MT5ReportingService
-from ..models.reporting import TradeStats, PairAnalysis, DrawdownInfo, PeriodicReport
+from ...services.mt5.mt5_reporting_service import MT5ReportingService
+from ...models.mt5.reporting import TradeStats, PairAnalysis, DrawdownInfo, PeriodicReport
 
 def get_router(reporting_service: MT5ReportingService) -> APIRouter:
-    router = APIRouter(prefix="/reporting", tags=["Reporting"])
+    router = APIRouter(prefix="/reporting", tags=["MT5 Reporting"])
 
     @router.get("/performance", response_model=TradeStats)
     async def get_performance_stats(

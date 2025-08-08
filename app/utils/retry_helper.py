@@ -1,5 +1,5 @@
 import logging
-from ..models.trade import TradeResponse
+from ..models.mt5.trade import TradeResponse
 
 logger = logging.getLogger(__name__)
 

@@ -2,13 +2,13 @@ from typing import Dict, Any
 import MetaTrader5 as mt5
 import logging
 from .mt5_base_service import MT5BaseService
-from ..models.trade import (
+from ...models.mt5.trade import (
     TradeRequest, TradeResponse, OrderType
 )
 from tenacity import retry, stop_after_attempt, wait_exponential
 import asyncio
-from ..utils.retry_helper import handle_retry_error
-from ..utils.constants import (
+from ...utils.retry_helper import handle_retry_error
+from ...utils.constants import (
     MAX_RETRIES, VERIFICATION_WAIT_TIME, 
     TRADE_DEVIATION, TRADE_MAGIC,
     RETRY_MULTIPLIER, RETRY_MIN_WAIT, RETRY_MAX_WAIT

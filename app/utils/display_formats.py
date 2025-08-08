@@ -1,4 +1,4 @@
-from ..models.signal import TimeFrame
+from ..models.mt5.signal import TimeFrame
 
 # Convert timeframe to human readable format
 timeframe_display = {

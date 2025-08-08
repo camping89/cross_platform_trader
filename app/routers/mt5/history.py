@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from typing import List
-from ..services.mt5_history_service import MT5HistoryService
-from ..models.trade import HistoricalOrder, HistoricalDeal, HistoricalPosition
+from ...services.mt5.mt5_history_service import MT5HistoryService
+from ...models.mt5.trade import HistoricalOrder, HistoricalDeal, HistoricalPosition
 from datetime import datetime
 
 def get_router(service: MT5HistoryService) -> APIRouter:
-    router = APIRouter(prefix="/history", tags=["Trading History"])
+    router = APIRouter(prefix="/history", tags=["MT5 Trading History"])
 
     @router.get("/orders",
         response_model=List[HistoricalOrder],

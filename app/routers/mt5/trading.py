@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
-from ..services.mt5_trading_service import MT5TradingService
-from ..services.mt5_notification_service import MT5NotificationService
-from ..models.trade import OrderType, TradeRequest, TradeResponse
+from ...services.mt5.mt5_trading_service import MT5TradingService
+from ...services.mt5.mt5_notification_service import MT5NotificationService
+from ...models.mt5.trade import OrderType, TradeRequest, TradeResponse
 
 def get_router(
     trading_service: MT5TradingService,
     notification_service: MT5NotificationService
 ) -> APIRouter:
-    router = APIRouter(prefix="/trading", tags=["Basic Trading"])
+    router = APIRouter(prefix="/trading", tags=["MT5 Basic Trading"])
 
     @router.post("/market-order",
         response_model=TradeResponse,

@@ -2,7 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 from .mt5_base_service import MT5BaseService
-from ..models.reporting import TradeStats, PairAnalysis, DrawdownInfo, PeriodicReport
+from ...models.mt5.reporting import TradeStats, PairAnalysis, DrawdownInfo, PeriodicReport
 
 logger = logging.getLogger(__name__)
 

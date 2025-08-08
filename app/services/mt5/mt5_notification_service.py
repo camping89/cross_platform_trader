@@ -5,7 +5,7 @@ from decimal import Decimal
 from datetime import datetime
 import asyncio
 from .mt5_base_service import MT5BaseService
-from ..models.notification import (
+from ...models.mt5.notification import (
     NotificationChannel, NotificationPriority, AlertType,
     PriceAlert, PnLAlert, SignalAlert, NewsAlert, NotificationConfig
 )

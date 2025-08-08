@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from ..services.mt5_automation_service import MT5AutomationService
-from ..models.automation import (
+from ...services.mt5.mt5_automation_service import MT5AutomationService
+from ...models.mt5.automation import (
     ScheduledTrade, ConditionalOrder,
     GridTradingConfig, MartingaleConfig
 )
 
 def get_router(service: MT5AutomationService) -> APIRouter:
-    router = APIRouter(prefix="/automation", tags=["Trading Automation"])
+    router = APIRouter(prefix="/automation", tags=["MT5 Trading Automation"])
 
     @router.post("/schedule",
         summary="Schedule Trade",

@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from ..services.mt5_risk_service import MT5RiskService
-from ..models.risk_management import (
+from ...services.mt5.mt5_risk_service import MT5RiskService
+from ...models.mt5.risk_management import (
     PositionSizeRequest, PositionSizeResponse,
     TrailingStopRequest, PortfolioRiskRequest, PortfolioRiskResponse
 )
 
 def get_router(service: MT5RiskService) -> APIRouter:
-    router = APIRouter(prefix="/risk", tags=["Risk Management"])
+    router = APIRouter(prefix="/risk", tags=["MT5 Risk Management"])
 
     @router.post("/position-size",
         response_model=PositionSizeResponse,

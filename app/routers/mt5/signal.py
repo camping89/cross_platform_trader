@@ -1,16 +1,16 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List
 from datetime import datetime, timedelta, time, date
-from ..services.mt5_signal_service import MT5SignalService
-from ..services.mt5_notification_service import MT5NotificationService
-from ..models.signal import TradingSignal, SignalType, TimeFrame, SymbolSignalsResponse, TimeframeSignal
-from ..utils.display_formats import get_timeframe_display
+from ...services.mt5.mt5_signal_service import MT5SignalService
+from ...services.mt5.mt5_notification_service import MT5NotificationService
+from ...models.mt5.signal import TradingSignal, SignalType, TimeFrame, SymbolSignalsResponse, TimeframeSignal
+from ...utils.display_formats import get_timeframe_display
 
 def get_router(
     signal_service: MT5SignalService,
     notification_service: MT5NotificationService
 ) -> APIRouter:
-    router = APIRouter(prefix="/signals", tags=["Trading Signals"])
+    router = APIRouter(prefix="/signals", tags=["MT5 Trading Signals"])
 
     @router.post("/",
         summary="Add Trading Signal",

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 from typing import Optional
-from ..services.mt5_account_service import MT5AccountService
-from ..models.trade import AccountInfo
+from ...services.mt5.mt5_account_service import MT5AccountService
+from ...models.mt5.trade import AccountInfo
 
 def get_router(service: MT5AccountService) -> APIRouter:
-    router = APIRouter(prefix="/account", tags=["Account Information"])
+    router = APIRouter(prefix="/account", tags=["MT5 Account Information"])
 
     @router.get("/info", 
         response_model=Optional[AccountInfo],

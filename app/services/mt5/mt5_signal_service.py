@@ -6,10 +6,10 @@ import motor.motor_asyncio
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
-from ..models.signal import TradingSignal
+from ...models.mt5.signal import TradingSignal
 from .mt5_base_service import MT5BaseService
-from ..config import settings
-from ..utils.exceptions import DatabaseConnectionError, SignalNotFoundError
+from ...config import settings
+from ...utils.exceptions import DatabaseConnectionError, SignalNotFoundError
 
 logger = logging.getLogger(__name__)
 

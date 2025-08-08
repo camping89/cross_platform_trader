@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
-from ..services.mt5_market_service import MT5MarketService
-from ..models.market import SymbolInfo, TickData, OHLC, SymbolList
+from ...services.mt5.mt5_market_service import MT5MarketService
+from ...models.mt5.market import SymbolInfo, TickData, OHLC, SymbolList
 
 def get_router(market_service: MT5MarketService) -> APIRouter:
-    router = APIRouter(prefix="/market", tags=["Market Info"])
+    router = APIRouter(prefix="/market", tags=["MT5 Market Info"])
 
     @router.get("/symbols", response_model=SymbolList,
         summary="Get and Search Symbols",

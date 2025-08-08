@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import List, Dict, Optional, Union
 import MetaTrader5 as mt5
 from .mt5_base_service import MT5BaseService
-from ..models.automation import (
+from ...models.mt5.automation import (
     ScheduledTrade, ConditionalOrder, 
     GridTradingConfig, MartingaleConfig
 )

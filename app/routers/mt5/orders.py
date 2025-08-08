@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from ..services.mt5_order_service import MT5OrderService
-from ..models.trade import TradeRequest, TradeResponse, PendingOrder
+from ...services.mt5.mt5_order_service import MT5OrderService
+from ...models.mt5.trade import TradeRequest, TradeResponse, PendingOrder
 
 def get_router(service: MT5OrderService) -> APIRouter:
-    router = APIRouter(prefix="/orders", tags=["Orders Management"])
+    router = APIRouter(prefix="/orders", tags=["MT5 Orders Management"])
 
     @router.get("/pending",
         response_model=List[PendingOrder],

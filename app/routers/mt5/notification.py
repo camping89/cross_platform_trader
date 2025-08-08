@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from ..services.mt5_notification_service import MT5NotificationService
-from ..models.notification import (
+from ...services.mt5.mt5_notification_service import MT5NotificationService
+from ...models.mt5.notification import (
     NotificationConfig, PriceAlert, PnLAlert,
     SignalAlert, NewsAlert
 )
 
 def get_router(service: MT5NotificationService) -> APIRouter:
-    router = APIRouter(prefix="/notifications", tags=["Notifications"])
+    router = APIRouter(prefix="/notifications", tags=["MT5 Notifications"])
 
     @router.post("/config",
         summary="Configure Notification Settings",
