@@ -70,7 +70,7 @@ FastAPI Application
 ### 1. Clone repository
 ```bash
 git clone <repository-url>
-cd exness-mt5-trading-service
+cd cross_platform_trader
 ```
 
 ### 2. Tạo virtual environment
@@ -133,70 +133,92 @@ Truy cập: `http://localhost:8000/docs`
 
 ### 📊 API Endpoints Overview
 
-#### **🎯 Trading APIs** (`/trading`)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/trading/market-order` | Thực hiện lệnh thị trường |
+**Tất cả MT5 endpoints có prefix `/mt5/`**
 
-#### **📈 Market Data APIs** (`/market`)
+#### **🎯 Trading APIs** (`/mt5/trading/`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/market/symbols` | Lấy/tìm kiếm symbols |
-| `GET` | `/market/symbols/{symbol}/info` | Thông tin chi tiết symbol |
-| `GET` | `/market/symbols/{symbol}/price` | Giá thời gian thực |
-| `GET` | `/market/symbols/{symbol}/ticks` | Lịch sử tick data |
-| `GET` | `/market/symbols/{symbol}/ohlc` | Dữ liệu OHLC |
+| `POST` | `/mt5/trading/market-order` | Thực hiện lệnh thị trường |
 
-#### **📋 Position Management APIs** (`/positions`)
+#### **📈 Market Data APIs** (`/mt5/market/`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/positions/` | Lấy tất cả positions |
-| `DELETE` | `/positions/{ticket}` | Đóng position |
-| `POST` | `/positions/{ticket}/modify` | Sửa SL/TP |
-| `POST` | `/positions/close-all` | Đóng tất cả positions |
-| `POST` | `/positions/hedge/{ticket}` | Tạo hedge position |
+| `GET` | `/mt5/market/symbols` | Lấy/tìm kiếm symbols |
+| `GET` | `/mt5/market/symbols/{symbol}/info` | Thông tin chi tiết symbol |
+| `GET` | `/mt5/market/symbols/{symbol}/price` | Giá thời gian thực |
+| `GET` | `/mt5/market/symbols/{symbol}/ticks` | Lịch sử tick data |
+| `GET` | `/mt5/market/symbols/{symbol}/ohlc` | Dữ liệu OHLC |
 
-#### **📝 Orders Management APIs** (`/orders`)
+#### **📋 Position Management APIs** (`/mt5/positions/`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/orders/pending` | Lấy pending orders |
-| `POST` | `/orders/pending` | Tạo pending order |
-| `DELETE` | `/orders/pending/{ticket}` | Hủy pending order |
+| `GET` | `/mt5/positions/` | Lấy tất cả positions |
+| `DELETE` | `/mt5/positions/{ticket}` | Đóng position |
+| `POST` | `/mt5/positions/{ticket}/modify` | Sửa SL/TP |
+| `POST` | `/mt5/positions/close-all` | Đóng tất cả positions |
+| `POST` | `/mt5/positions/hedge/{ticket}` | Tạo hedge position |
 
-#### **👤 Account APIs** (`/account`)
+#### **📝 Orders Management APIs** (`/mt5/orders/`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/account/info` | Thông tin tài khoản |
+| `GET` | `/mt5/orders/pending` | Lấy pending orders |
+| `POST` | `/mt5/orders/pending` | Tạo pending order |
+| `DELETE` | `/mt5/orders/pending/{ticket}` | Hủy pending order |
+| `GET` | `/mt5/orders/history` | Lịch sử orders |
 
-#### **🛡️ Risk Management APIs** (`/risk`)
+#### **👤 Account APIs** (`/mt5/account/`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/risk/position-size` | Tính position size |
-| `POST` | `/risk/trailing-stop` | Quản lý trailing stop |
-| `POST` | `/risk/portfolio-risk` | Phân tích rủi ro portfolio |
+| `GET` | `/mt5/account/info` | Thông tin tài khoản |
 
-#### **📊 Trading Signals APIs** (`/signals`)
+#### **📊 History APIs** (`/mt5/history/`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/signals/` | Thêm signal |
-| `GET` | `/signals/` | Lấy signals theo symbol |
-| `DELETE` | `/signals/{signal_id}` | Xóa signal |
-| `GET` | `/signals/symbols` | Lấy danh sách symbols |
-| `GET` | `/signals/timeframes` | Lấy danh sách timeframes |
+| `GET` | `/mt5/history/orders` | Lịch sử orders |
+| `GET` | `/mt5/history/deals` | Lịch sử deals |
+| `GET` | `/mt5/history/positions` | Lịch sử positions |
 
-#### **🤖 Automation APIs** (`/automation`)
+#### **🛡️ Risk Management APIs** (`/mt5/risk-management/`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/automation/schedule` | Lên lịch giao dịch |
-| `POST` | `/automation/conditional` | Tạo lệnh có điều kiện |
-| `POST` | `/automation/grid` | Thiết lập grid trading |
-| `POST` | `/automation/martingale` | Thiết lập martingale |
+| `POST` | `/mt5/risk-management/position-size` | Tính position size |
+| `POST` | `/mt5/risk-management/trailing-stop` | Quản lý trailing stop |
+| `POST` | `/mt5/risk-management/portfolio-risk` | Phân tích rủi ro portfolio |
+
+#### **📊 Trading Signals APIs** (`/mt5/signals/`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/mt5/signals/` | Thêm signal |
+| `GET` | `/mt5/signals/` | Lấy signals theo symbol |
+| `DELETE` | `/mt5/signals/{signal_id}` | Xóa signal |
+| `GET` | `/mt5/signals/symbols` | Lấy danh sách symbols |
+| `GET` | `/mt5/signals/timeframes` | Lấy danh sách timeframes |
+
+#### **🤖 Automation APIs** (`/mt5/automation/`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/mt5/automation/schedule` | Lên lịch giao dịch |
+| `POST` | `/mt5/automation/conditional` | Tạo lệnh có điều kiện |
+| `POST` | `/mt5/automation/grid` | Thiết lập grid trading |
+| `POST` | `/mt5/automation/martingale` | Thiết lập martingale |
+
+#### **📱 Notifications APIs** (`/mt5/notifications/`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/mt5/notifications/telegram` | Gửi thông báo Telegram |
+| `POST` | `/mt5/notifications/discord` | Gửi thông báo Discord |
+
+#### **📈 Reporting APIs** (`/mt5/reporting/`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/mt5/reporting/performance` | Báo cáo hiệu suất |
+| `GET` | `/mt5/reporting/daily-summary` | Tóm tắt giao dịch hàng ngày |
 
 ## 💡 Ví dụ sử dụng
 
 ### 1. Thực hiện Market Order
 ```bash
-curl -X POST "http://localhost:8000/trading/market-order" \
+curl -X POST "http://localhost:8000/mt5/trading/market-order" \
      -H "Content-Type: application/json" \
      -d '{
        "symbol": "BTCUSD",
@@ -210,22 +232,22 @@ curl -X POST "http://localhost:8000/trading/market-order" \
 
 ### 2. Lấy thông tin tài khoản
 ```bash
-curl -X GET "http://localhost:8000/account/info"
+curl -X GET "http://localhost:8000/mt5/account/info"
 ```
 
 ### 3. Lấy giá symbol
 ```bash
-curl -X GET "http://localhost:8000/market/symbols/BTCUSD/price"
+curl -X GET "http://localhost:8000/mt5/market/symbols/BTCUSD/price"
 ```
 
 ### 4. Đóng tất cả positions
 ```bash
-curl -X POST "http://localhost:8000/positions/close-all"
+curl -X POST "http://localhost:8000/mt5/positions/close-all"
 ```
 
 ### 5. Thêm trading signal
 ```bash
-curl -X POST "http://localhost:8000/signals/" \
+curl -X POST "http://localhost:8000/mt5/signals/" \
      -H "Content-Type: application/json" \
      -d '{
        "symbol": "BTCUSD",
@@ -233,6 +255,16 @@ curl -X POST "http://localhost:8000/signals/" \
        "timeframe": "1",
        "entry_price": 47500
      }'
+```
+
+### 6. Lấy danh sách positions
+```bash
+curl -X GET "http://localhost:8000/mt5/positions/"
+```
+
+### 7. Search symbols
+```bash
+curl -X GET "http://localhost:8000/mt5/market/symbols?search=BTC"
 ```
 
 ## 🚨 Troubleshooting
@@ -258,7 +290,7 @@ curl -X POST "http://localhost:8000/signals/" \
 
 4. **Kiểm tra trading status:**
    ```bash
-   curl -X GET "http://localhost:8000/account/info"
+   curl -X GET "http://localhost:8000/mt5/account/info"
    ```
 
 ### ❌ Lỗi: "Failed to connect to MT5"
@@ -276,7 +308,7 @@ curl -X POST "http://localhost:8000/signals/" \
 2. Đảm bảo symbol có trong Market Watch của MT5
 3. Sử dụng API để search symbols:
    ```bash
-   curl -X GET "http://localhost:8000/market/symbols?search=BTC"
+   curl -X GET "http://localhost:8000/mt5/market/symbols?search=BTC"
    ```
 
 ## 🔧 Development
@@ -301,6 +333,18 @@ gunicorn app.main:app -c gunicorn.conf.py
 ### Health Check
 ```bash
 curl -X GET "http://localhost:8000/health"
+```
+
+Response sẽ hiển thị trạng thái kết nối MT5:
+```json
+{
+  "status": "healthy",
+  "services": {
+    "mt5": "connected",
+    "okx": "disconnected"  
+  },
+  "message": "MT5: connected, OKX: disconnected"
+}
 ```
 
 ### Logs
