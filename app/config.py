@@ -7,6 +7,12 @@ class Settings(BaseSettings):
     MT5_PASSWORD: str
     MT5_SERVER: str
     
+    # OKX Settings
+    OKX_API_KEY: str
+    OKX_SECRET_KEY: str
+    OKX_PASSPHRASE: str
+    OKX_IS_SANDBOX: bool
+    
     # Notification Settings
     TELEGRAM_BOT_TOKEN: str
     TELEGRAM_CHAT_ID: str

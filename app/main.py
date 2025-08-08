@@ -8,6 +8,8 @@ from app.config import settings
 from app.models.mt5.notification import NotificationConfig
 
 from app.routers.mt5 import market_info, orders, history, position, risk_management, trading, account, notification, automation, reporting, signal
+from app.routers.okx import trading as okx_trading, market as okx_market, account as okx_account
+
 from app.services.mt5.mt5_base_service import MT5BaseService
 from app.services.mt5.mt5_trading_service import MT5TradingService
 from app.services.mt5.mt5_market_service import MT5MarketService
@@ -21,10 +23,15 @@ from app.services.mt5.mt5_automation_service import MT5AutomationService
 from app.services.mt5.mt5_reporting_service import MT5ReportingService
 from app.services.mt5.mt5_signal_service import MT5SignalService
 
+from app.services.okx.okx_base_service import OKXBaseService
+from app.services.okx.okx_trading_service import OKXTradingService
+from app.services.okx.okx_market_service import OKXMarketService
+from app.services.okx.okx_account_service import OKXAccountService
+
 # Initialize services with shared MT5 connection
 mt5_base_service = MT5BaseService()
 
-# Create service instances
+# Create MT5 service instances
 mt5_trading_service = MT5TradingService(mt5_base_service)
 mt5_market_service = MT5MarketService(mt5_base_service)
 mt5_order_service = MT5OrderService(mt5_base_service)
@@ -36,6 +43,14 @@ mt5_notification_service = MT5NotificationService(mt5_base_service)
 mt5_automation_service = MT5AutomationService(mt5_base_service)
 mt5_reporting_service = MT5ReportingService(mt5_base_service)
 mt5_signal_service = MT5SignalService(mt5_base_service)
+
+# Initialize services with shared OKX connection
+okx_base_service = OKXBaseService()
+
+# Create OKX service instances
+okx_trading_service = OKXTradingService(okx_base_service)
+okx_market_service = OKXMarketService(okx_base_service)
+okx_account_service = OKXAccountService(okx_base_service)
 
 # Configure logging
 logging.basicConfig(
@@ -50,27 +65,43 @@ async def lifespan(app: FastAPI):
     Lifespan event handler for FastAPI application
     Handles startup and shutdown events
     """
-    # Startup: Connect to MT5
+    # Startup: Connect to MT5 and OKX
     try:
-        connected = await mt5_base_service.connect(
+        # Connect to MT5
+        mt5_connected = await mt5_base_service.connect(
             login=settings.MT5_LOGIN,
             password=settings.MT5_PASSWORD,
             server=settings.MT5_SERVER
         )
-        if not connected:
-            raise Exception("Failed to connect to MT5")
+        if not mt5_connected:
+            logger.warning("Failed to connect to MT5")
+        else:
+            logger.info("MT5 connection established")
         
-        # Initialize notification service
-        notification_config = NotificationConfig(
-            telegram_token=settings.TELEGRAM_BOT_TOKEN,
-            telegram_chat_id=settings.TELEGRAM_CHAT_ID,
-            discord_webhook=settings.DISCORD_WEBHOOK_URL,
+        # Connect to OKX
+        okx_connected = await okx_base_service.connect(
+            api_key=settings.OKX_API_KEY,
+            secret_key=settings.OKX_SECRET_KEY,
+            passphrase=settings.OKX_PASSPHRASE,
+            is_sandbox=settings.OKX_IS_SANDBOX
         )
-        await mt5_notification_service.initialize(notification_config)
-        logger.info("Notification service initialized")
+        if not okx_connected:
+            logger.warning("Failed to connect to OKX")
+        else:
+            logger.info("OKX connection established")
         
-        # Start automation tasks
-        await mt5_automation_service.start_automation()
+        # Initialize notification service (only if MT5 connected)
+        if mt5_connected:
+            notification_config = NotificationConfig(
+                telegram_token=settings.TELEGRAM_BOT_TOKEN,
+                telegram_chat_id=settings.TELEGRAM_CHAT_ID,
+                discord_webhook=settings.DISCORD_WEBHOOK_URL,
+            )
+            await mt5_notification_service.initialize(notification_config)
+            logger.info("Notification service initialized")
+            
+            # Start automation tasks
+            await mt5_automation_service.start_automation()
         
     except Exception as e:
         logger.error(f"Startup error: {str(e)}")
@@ -78,11 +109,15 @@ async def lifespan(app: FastAPI):
     
     yield  # Application running
     
-    # Shutdown: Cleanup MT5 connection
+    # Shutdown: Cleanup connections
     if mt5_base_service.initialized:
         logger.info("Shutting down MT5 connection")
         await mt5_automation_service.stop_automation()
         await mt5_base_service.shutdown()
+        
+    if okx_base_service.initialized:
+        logger.info("Shutting down OKX connection")
+        await okx_base_service.shutdown()
 
 # Initialize FastAPI with lifespan
 app = FastAPI(
@@ -107,9 +142,18 @@ app.add_middleware(
          tags=["Health Check"])
 async def health_check():
     """Check connection status endpoint"""
+    mt5_status = "connected" if mt5_base_service.initialized else "disconnected"
+    okx_status = "connected" if okx_base_service.initialized else "disconnected"
+    
+    overall_status = "healthy" if (mt5_base_service.initialized or okx_base_service.initialized) else "unhealthy"
+    
     return {
-        "status": "healthy" if mt5_base_service.initialized else "unhealthy",
-        "message": "Connected" if mt5_base_service.initialized else "Not connected"
+        "status": overall_status,
+        "services": {
+            "mt5": mt5_status,
+            "okx": okx_status
+        },
+        "message": f"MT5: {mt5_status}, OKX: {okx_status}"
     }
 
 # Include routers with mt5 prefix
@@ -156,6 +200,20 @@ app.include_router(
 app.include_router(
     signal.get_router(mt5_signal_service, mt5_notification_service),
     prefix="/mt5"
+)
+
+# Include OKX routers with okx prefix
+app.include_router(
+    okx_trading.get_router(okx_trading_service),
+    prefix="/okx"
+)
+app.include_router(
+    okx_market.get_router(okx_market_service),
+    prefix="/okx"
+)
+app.include_router(
+    okx_account.get_router(okx_account_service),
+    prefix="/okx"
 )
 
 def main():
