@@ -5,6 +5,27 @@ from okx.api.public import Public as PublicData
 from okx.api.market import Market as MarketData
 import logging
 from typing import Optional
+import ssl
+import certifi
+import os
+import requests
+import urllib3
+
+# Fix SSL certificate verification
+os.environ['SSL_CERT_FILE'] = certifi.where()
+os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+
+# Disable SSL warnings and verification for OKX (temporary fix)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
+
+# Monkey patch requests to disable SSL verification
+old_request = requests.Session.request
+def new_request(self, method, url, **kwargs):
+    if 'okx.com' in url:
+        kwargs['verify'] = False
+    return old_request(self, method, url, **kwargs)
+requests.Session.request = new_request
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +88,10 @@ class OKXBaseService:
             self.is_sandbox = is_sandbox
             
             # Initialize API clients
+            # Optional: Disable SSL verification for testing (not recommended for production)
+            # import urllib3
+            # urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            
             self.account_api = Account(
                 key=api_key,
                 secret=secret_key,

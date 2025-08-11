@@ -9,6 +9,7 @@ from app.models.mt5.notification import NotificationConfig
 
 from app.routers.mt5 import market_info, orders, history, position, risk_management, trading, account, notification, automation, reporting, signal
 from app.routers.okx import trading as okx_trading, market as okx_market, account as okx_account
+from app.routers.okx import algo_trading
 
 from app.services.mt5.mt5_base_service import MT5BaseService
 from app.services.mt5.mt5_trading_service import MT5TradingService
@@ -27,6 +28,7 @@ from app.services.okx.okx_base_service import OKXBaseService
 from app.services.okx.okx_trading_service import OKXTradingService
 from app.services.okx.okx_market_service import OKXMarketService
 from app.services.okx.okx_account_service import OKXAccountService
+from app.services.okx.okx_algo_service import OKXAlgoService
 
 # Initialize services with shared MT5 connection
 mt5_base_service = MT5BaseService()
@@ -51,6 +53,7 @@ okx_base_service = OKXBaseService()
 okx_trading_service = OKXTradingService(okx_base_service)
 okx_market_service = OKXMarketService(okx_base_service)
 okx_account_service = OKXAccountService(okx_base_service)
+okx_algo_service = OKXAlgoService(okx_base_service)
 
 # Configure logging
 logging.basicConfig(
@@ -213,6 +216,10 @@ app.include_router(
 )
 app.include_router(
     okx_account.get_router(okx_account_service),
+    prefix="/okx"
+)
+app.include_router(
+    algo_trading.get_router(okx_algo_service),
     prefix="/okx"
 )
 

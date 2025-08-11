@@ -77,6 +77,18 @@ class OKXTradeRequest(BaseModel):
         None, 
         description="Order price for limit orders"
     )
+    ccy: Optional[str] = Field(
+        None,
+        description="Currency for margin trading"
+    )
+    cl_ord_id: Optional[str] = Field(
+        None,
+        description="Client order ID"
+    )
+    tag: Optional[str] = Field(
+        None, 
+        description="Order tag"
+    )
     pos_side: Optional[PositionSide] = Field(
         None,
         description="Position side for futures/swap"
@@ -85,13 +97,45 @@ class OKXTradeRequest(BaseModel):
         None,
         description="Whether the order is reduce-only"
     )
-    tag: Optional[str] = Field(
-        None, 
-        description="Order tag"
-    )
-    cl_ord_id: Optional[str] = Field(
+    tp_trigger_px: Optional[str] = Field(
         None,
-        description="Client order ID"
+        description="Take profit trigger price"
+    )
+    tp_ord_px: Optional[str] = Field(
+        None,
+        description="Take profit order price"
+    )
+    sl_trigger_px: Optional[str] = Field(
+        None,
+        description="Stop loss trigger price"
+    )
+    sl_ord_px: Optional[str] = Field(
+        None,
+        description="Stop loss order price"
+    )
+    tp_trigger_px_type: Optional[str] = Field(
+        None,
+        description="Take profit trigger price type: last, index, mark"
+    )
+    sl_trigger_px_type: Optional[str] = Field(
+        None,
+        description="Stop loss trigger price type: last, index, mark"
+    )
+    quick_margin_type: Optional[str] = Field(
+        None,
+        description="Quick margin type: manual, auto_borrow, auto_repay"
+    )
+    stp_id: Optional[str] = Field(
+        None,
+        description="Self trade prevention ID"
+    )
+    stp_mode: Optional[str] = Field(
+        None,
+        description="Self trade prevention mode: cancel_maker, cancel_taker, cancel_both"
+    )
+    banner_flag: Optional[str] = Field(
+        None,
+        description="Banner flag for special order marking"
     )
 
     class Config:

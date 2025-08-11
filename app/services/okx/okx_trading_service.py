@@ -69,6 +69,15 @@ class OKXTradingService:
             
             if trade_request.px:
                 order_params["px"] = trade_request.px
+            
+            if trade_request.ccy:
+                order_params["ccy"] = trade_request.ccy
+                
+            if trade_request.cl_ord_id:
+                order_params["clOrdId"] = trade_request.cl_ord_id
+                
+            if trade_request.tag:
+                order_params["tag"] = trade_request.tag
                 
             if trade_request.pos_side:
                 order_params["posSide"] = trade_request.pos_side.value
@@ -76,11 +85,35 @@ class OKXTradingService:
             if trade_request.reduce_only is not None:
                 order_params["reduceOnly"] = trade_request.reduce_only
                 
-            if trade_request.tag:
-                order_params["tag"] = trade_request.tag
+            if trade_request.tp_trigger_px:
+                order_params["tpTriggerPx"] = trade_request.tp_trigger_px
                 
-            if trade_request.cl_ord_id:
-                order_params["clOrdId"] = trade_request.cl_ord_id
+            if trade_request.tp_ord_px:
+                order_params["tpOrdPx"] = trade_request.tp_ord_px
+                
+            if trade_request.sl_trigger_px:
+                order_params["slTriggerPx"] = trade_request.sl_trigger_px
+                
+            if trade_request.sl_ord_px:
+                order_params["slOrdPx"] = trade_request.sl_ord_px
+                
+            if trade_request.tp_trigger_px_type:
+                order_params["tpTriggerPxType"] = trade_request.tp_trigger_px_type
+                
+            if trade_request.sl_trigger_px_type:
+                order_params["slTriggerPxType"] = trade_request.sl_trigger_px_type
+                
+            if trade_request.quick_margin_type:
+                order_params["quickMgnType"] = trade_request.quick_margin_type
+                
+            if trade_request.stp_id:
+                order_params["stpId"] = trade_request.stp_id
+                
+            if trade_request.stp_mode:
+                order_params["stpMode"] = trade_request.stp_mode
+                
+            if trade_request.banner_flag:
+                order_params["bannerFlag"] = trade_request.banner_flag
 
             # Execute the trade
             result = self.base_service.trade_api.set_order(**order_params)
