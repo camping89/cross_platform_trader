@@ -10,6 +10,7 @@ from app.models.mt5.notification import NotificationConfig
 from app.routers.mt5 import market_info, orders, history, position, risk_management, trading, account, notification, automation, reporting, signal
 from app.routers.okx import trading as okx_trading, market as okx_market, account as okx_account
 from app.routers.okx import algo_trading
+from app.routers.discord import messages as discord_messages
 
 from app.services.mt5.mt5_base_service import MT5BaseService
 from app.services.mt5.mt5_trading_service import MT5TradingService
@@ -29,6 +30,9 @@ from app.services.okx.okx_trading_service import OKXTradingService
 from app.services.okx.okx_market_service import OKXMarketService
 from app.services.okx.okx_account_service import OKXAccountService
 from app.services.okx.okx_algo_service import OKXAlgoService
+
+from app.services.discord.discord_message_service import DiscordMessageService
+from app.services.discord.discord_scheduler import DiscordScheduler
 
 # Initialize services with shared MT5 connection
 mt5_base_service = MT5BaseService()
@@ -54,6 +58,10 @@ okx_trading_service = OKXTradingService(okx_base_service)
 okx_market_service = OKXMarketService(okx_base_service)
 okx_account_service = OKXAccountService(okx_base_service)
 okx_algo_service = OKXAlgoService(okx_base_service)
+
+# Create Discord service instances
+discord_message_service = DiscordMessageService()
+discord_scheduler = DiscordScheduler(discord_message_service)
 
 # Configure logging
 logging.basicConfig(
@@ -106,6 +114,14 @@ async def lifespan(app: FastAPI):
             # Start automation tasks
             await mt5_automation_service.start_automation()
         
+        # Initialize Discord services
+        try:
+            await discord_message_service.initialize_db()
+            await discord_scheduler.start_scheduler()
+            logger.info("Discord services initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize Discord services: {str(e)}")
+        
     except Exception as e:
         logger.error(f"Startup error: {str(e)}")
         raise
@@ -121,6 +137,14 @@ async def lifespan(app: FastAPI):
     if okx_base_service.initialized:
         logger.info("Shutting down OKX connection")
         await okx_base_service.shutdown()
+    
+    # Shutdown Discord services
+    try:
+        await discord_scheduler.stop_scheduler()
+        await discord_message_service.close_db_connection()
+        logger.info("Discord services shut down")
+    except Exception as e:
+        logger.error(f"Error shutting down Discord services: {str(e)}")
 
 # Initialize FastAPI with lifespan
 app = FastAPI(
@@ -147,6 +171,7 @@ async def health_check():
     """Check connection status endpoint"""
     mt5_status = "connected" if mt5_base_service.initialized else "disconnected"
     okx_status = "connected" if okx_base_service.initialized else "disconnected"
+    discord_status = "running" if discord_scheduler.is_running() else "stopped"
     
     overall_status = "healthy" if (mt5_base_service.initialized or okx_base_service.initialized) else "unhealthy"
     
@@ -154,9 +179,10 @@ async def health_check():
         "status": overall_status,
         "services": {
             "mt5": mt5_status,
-            "okx": okx_status
+            "okx": okx_status,
+            "discord_scheduler": discord_status
         },
-        "message": f"MT5: {mt5_status}, OKX: {okx_status}"
+        "message": f"MT5: {mt5_status}, OKX: {okx_status}, Discord: {discord_status}"
     }
 
 # Include routers with mt5 prefix
@@ -221,6 +247,12 @@ app.include_router(
 app.include_router(
     algo_trading.get_router(okx_algo_service),
     prefix="/okx"
+)
+
+# Include Discord routers with discord prefix
+app.include_router(
+    discord_messages.get_router(discord_message_service),
+    prefix="/discord"
 )
 
 def main():

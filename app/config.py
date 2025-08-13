@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     TELEGRAM_CHAT_ID: str
     DISCORD_WEBHOOK_URL: str
     
+    # Discord Message Fetching Settings
+    DISCORD_USER_TOKEN: Optional[str] = None
+    DISCORD_CHANNEL_ID: Optional[str] = None
+    TARGET_USER_ID: Optional[str] = None
+    
     # MongoDB settings
     MONGODB_URL: str
     MONGODB_DB: str
