@@ -264,3 +264,18 @@ class CancelOKXOrderRequest(BaseModel):
     inst_id: str = Field(..., description="Instrument ID")
     ord_id: Optional[str] = Field(None, description="Order ID")
     cl_ord_id: Optional[str] = Field(None, description="Client order ID")
+
+class CloseOKXPositionRequest(BaseModel):
+    inst_id: str = Field(..., description="Instrument ID")
+    mgn_mode: str = Field(..., description="Margin mode: cross, isolated")
+    pos_side: Optional[str] = Field(None, description="Position side: net (for spot/margin), long/short (for derivatives)")
+    ccy: Optional[str] = Field(None, description="Currency for margin trading")
+    auto_cxl: Optional[bool] = Field(None, description="Auto cancel when market close")
+    cl_ord_id: Optional[str] = Field(None, description="Client order ID")
+    tag: Optional[str] = Field(None, description="Order tag")
+
+class CloseOKXPositionResponse(BaseModel):
+    inst_id: str = Field(..., description="Instrument ID")
+    pos_side: Optional[str] = Field(None, description="Position side")
+    cl_ord_id: Optional[str] = Field(None, description="Client order ID")
+    tag: Optional[str] = Field(None, description="Order tag")

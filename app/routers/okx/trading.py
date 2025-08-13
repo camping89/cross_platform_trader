@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from ...services.okx.okx_trading_service import OKXTradingService
-from ...models.okx.trade import OKXTradeRequest, OKXTradeResponse, CancelOKXOrderRequest, ModifyOKXOrderRequest
+from ...models.okx.trade import OKXTradeRequest, OKXTradeResponse, CancelOKXOrderRequest, ModifyOKXOrderRequest, CloseOKXPositionRequest, CloseOKXPositionResponse
 from typing import List, Optional
 
 def get_router(trading_service: OKXTradingService) -> APIRouter:
@@ -226,5 +226,44 @@ def get_router(trading_service: OKXTradingService) -> APIRouter:
             
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
+
+    @router.post("/close-position",
+        response_model=CloseOKXPositionResponse,
+        summary="Close Position",
+        description="Close position using market order")
+    async def close_position(close_request: CloseOKXPositionRequest):
+        """
+        Close position using market order
+        
+        This endpoint closes positions instantly using market orders:
+        
+        **Requirements:**
+        - **inst_id**: The instrument ID (required)
+        - **mgn_mode**: Margin mode (required)
+          - **cross**: Cross margin mode
+          - **isolated**: Isolated margin mode
+        
+        **Optional Parameters:**
+        - **pos_side**: Position side to close
+          - **long**: Close long position
+          - **short**: Close short position
+          - **net**: Close net position (default for spot)
+        - **ccy**: Currency for margin trading
+        - **auto_cxl**: Auto cancel when market close (default: false)
+        - **cl_ord_id**: Your custom client order ID
+        - **tag**: Order tag for identification
+        
+        **Trading Modes:**
+        - **Spot**: Use mgn_mode="cross", pos_side not required
+        - **Futures/Swap**: Use mgn_mode="cross" or "isolated", pos_side required
+        
+        **Examples:**
+        - Close BTC swap position: `{"inst_id": "BTC-USDT-SWAP", "mgn_mode": "cross", "pos_side": "long"}`
+        - Close ETH spot position: `{"inst_id": "ETH-USDT", "mgn_mode": "cross"}`
+        
+        **Note**: This will close the ENTIRE position at market price
+        """
+        result = await trading_service.close_position(close_request)
+        return result
 
     return router

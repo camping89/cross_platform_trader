@@ -3,7 +3,8 @@ import logging
 from .okx_base_service import OKXBaseService
 from ...models.okx.trade import (
     OKXTradeRequest, OKXTradeResponse, OrderSide, 
-    OKXOrder, CancelOKXOrderRequest, ModifyOKXOrderRequest
+    OKXOrder, CancelOKXOrderRequest, ModifyOKXOrderRequest,
+    CloseOKXPositionRequest, CloseOKXPositionResponse
 )
 from tenacity import retry, stop_after_attempt, wait_exponential
 import asyncio
@@ -372,3 +373,79 @@ class OKXTradingService:
         except Exception as e:
             logger.error(f"Error getting order details: {str(e)}")
             return None
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=RETRY_MULTIPLIER, min=RETRY_MIN_WAIT, max=RETRY_MAX_WAIT),
+        retry_error_callback=lambda retry_state: handle_retry_error(retry_state, max_retries=MAX_RETRIES)
+    )
+    async def close_position(self, close_request: CloseOKXPositionRequest) -> CloseOKXPositionResponse:
+        """
+        Close position using market order
+        
+        Args:
+            close_request: Close position request
+            
+        Returns:
+            CloseOKXPositionResponse: Close position result
+        """
+        if not await self.base_service.ensure_connected():
+            logger.error("Failed to connect to OKX API")
+            return CloseOKXPositionResponse(
+                inst_id=close_request.inst_id,
+                pos_side=close_request.pos_side,
+                cl_ord_id=close_request.cl_ord_id,
+                tag=close_request.tag
+            )
+
+        try:
+            close_params = {
+                "instId": close_request.inst_id,
+                "mgnMode": close_request.mgn_mode
+            }
+            
+            if close_request.pos_side:
+                close_params["posSide"] = close_request.pos_side
+                
+            if close_request.ccy:
+                close_params["ccy"] = close_request.ccy
+                
+            if close_request.auto_cxl is not None:
+                close_params["autoCxl"] = close_request.auto_cxl
+                
+            if close_request.cl_ord_id:
+                close_params["clOrdId"] = close_request.cl_ord_id
+                
+            if close_request.tag:
+                close_params["tag"] = close_request.tag
+
+            result = self.base_service.trade_api.set_close_position(**close_params)
+            
+            if not result or 'data' not in result or not result['data']:
+                error_msg = result.get('msg', 'Unknown error') if result else 'No response'
+                logger.error(f"Close position failed: {error_msg}")
+                return CloseOKXPositionResponse(
+                    inst_id=close_request.inst_id,
+                    pos_side=close_request.pos_side,
+                    cl_ord_id=close_request.cl_ord_id,
+                    tag=close_request.tag
+                )
+
+            close_data = result['data'][0]
+            
+            logger.info(f"Position closed successfully for {close_request.inst_id}")
+            return CloseOKXPositionResponse(
+                inst_id=close_data.get('instId', close_request.inst_id),
+                pos_side=close_data.get('posSide', close_request.pos_side),
+                cl_ord_id=close_data.get('clOrdId', close_request.cl_ord_id),
+                tag=close_data.get('tag', close_request.tag)
+            )
+
+        except Exception as e:
+            logger.error(f"Error closing position: {str(e)}")
+            return CloseOKXPositionResponse(
+                inst_id=close_request.inst_id,
+                pos_side=close_request.pos_side,
+                cl_ord_id=close_request.cl_ord_id,
+                tag=close_request.tag
+            )
